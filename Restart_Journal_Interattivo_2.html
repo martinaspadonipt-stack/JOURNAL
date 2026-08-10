@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restart Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7EFE2;
+    --cream-deep:#EFE2CE;
+    --card:#FFFDF9;
+    --taupe:#6B5A47;
+    --taupe-soft:#95836E;
+    --ink:#3E3226;
+    --gold:#B98B4E;
+    --gold-deep:#8F6B36;
+    --gold-pale:#F1E1C4;
+    --line:#E4D5BC;
+    --green:#7C8F6B;
+    --green-pale:#E8EEE1;
+    --pink:#D98FA0;
+    --pink-pale:#F7E3E7;
+    --pink-deep:#B9677C;
+    --blue:#6B9ABF;
+    --blue-pale:#E1EBF2;
+    --blue-deep:#3F6E8F;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  .app{
+    font-family:'Manrope',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    padding:0 0 60px;
+  }
+  .cover{
+    background:linear-gradient(180deg,var(--cream-deep),var(--cream));
+    padding:44px 24px 28px;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+  }
+  .ring{
+    width:34px;height:34px;border:3px solid var(--gold);border-radius:50%;
+    margin:0 auto 10px;
+  }
+  .cover-dots{display:flex;gap:6px;justify-content:center;margin-bottom:14px;}
+  .cover-dots span{width:6px;height:6px;border-radius:50%;display:inline-block;}
+  .cover h1{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:34px;
+    margin:0 0 6px;
+    color:var(--taupe);
+    letter-spacing:0.3px;
+  }
+  .cover p{
+    margin:0;
+    font-size:14px;
+    color:var(--taupe-soft);
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+  }
+  .tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:18px 20px;
+    max-width:760px;
+    margin:0 auto;
+  }
+  .tab{
+    flex:0 0 auto;
+    padding:9px 18px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--taupe);
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .tab.active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:#fff;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:8px 20px 0;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px 24px;
+    margin-bottom:16px;
+  }
+  .card h2{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:21px;
+    margin:0 0 6px;
+    color:var(--taupe);
+  }
+  .card h3{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:17px;
+    margin:0 0 8px;
+    color:var(--taupe);
+  }
+  .muted{color:var(--taupe-soft);font-size:14px;line-height:1.6;margin:0 0 10px;}
+  .backbtn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:none;border:none;color:var(--gold-deep);
+    font-weight:600;font-size:13px;cursor:pointer;padding:0;margin-bottom:14px;
+  }
+  .grid-list{display:grid;gap:10px;}
+  .row-card{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 18px;
+    cursor:pointer;
+  }
+  .row-card:hover{border-color:var(--gold);}
+  .row-title{font-weight:600;font-size:15px;color:var(--ink);}
+  .row-sub{font-size:12px;color:var(--taupe-soft);margin-top:2px;}
+  .progress-pill{
+    font-size:12px;font-weight:700;color:var(--gold-deep);
+    background:var(--gold-pale);
+    padding:4px 10px;border-radius:999px;
+  }
+  .arrow{color:var(--gold-deep);font-size:16px;}
+  .habit-item{
+    display:flex;align-items:center;gap:12px;
+    padding:12px 0;border-bottom:1px solid var(--line);
+  }
+  .habit-item:last-child{border-bottom:none;}
+  .icon-badge{
+    width:32px;height:32px;flex:0 0 32px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .icon-badge svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .ic-gold{background:var(--gold-pale);color:var(--gold-deep);}
+  .ic-blue{background:var(--blue-pale);color:var(--blue-deep);}
+  .ic-pink{background:var(--pink-pale);color:var(--pink-deep);}
+  .ic-green{background:var(--green-pale);color:var(--green);}
+  .card-title-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .card-title-row .icon-badge{width:28px;height:28px;flex:0 0 28px;}
+  .card-title-row .icon-badge svg{width:15px;height:15px;}
+  .card-title-row h3{margin:0;}
+  .checkbox{
+    width:24px;height:24px;flex:0 0 24px;
+    border:2px solid var(--gold);border-radius:7px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:14px;font-weight:700;
+  }
+  .checkbox.checked{background:var(--gold);}
+  .habit-label{font-size:15px;color:var(--ink);}
+  .habit-label.checked{color:var(--taupe-soft);text-decoration:line-through;}
+  textarea, input[type=text]{
+    width:100%;
+    font-family:'Manrope',sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    resize:vertical;
+    margin-bottom:14px;
+  }
+  textarea:focus, input[type=text]:focus{outline:2px solid var(--gold-pale);border-color:var(--gold);}
+  .choice{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 0;border-bottom:1px solid var(--line);
+    cursor:pointer;
+  }
+  .choice:last-child{border-bottom:none;}
+  .radio{
+    width:20px;height:20px;flex:0 0 20px;border:2px solid var(--gold);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .radio.checked::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--gold);}
+  .choice-label{font-size:14px;}
+  .days-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;}
+  .day-card{
+    background:var(--cream);border:1px solid var(--line);border-radius:14px;
+    padding:14px 10px;text-align:center;cursor:pointer;
+  }
+  .day-card:hover{border-color:var(--gold);}
+  .day-card .num{font-family:'Fraunces',serif;font-size:19px;color:var(--taupe);}
+  .day-card .frac{font-size:11px;color:var(--taupe-soft);margin-top:2px;}
+  .pillar{
+    display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);
+  }
+  .pillar:last-child{border-bottom:none;}
+  .pillar-num{
+    width:26px;height:26px;flex:0 0 26px;border-radius:50%;
+    background:var(--green-pale);color:var(--green);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+  }
+  .certificate{
+    text-align:center;padding:32px 20px;
+    background:var(--cream);border:2px solid var(--gold);border-radius:16px;
+  }
+  .certificate .name{
+    font-family:'Fraunces',serif;font-size:26px;color:var(--gold-deep);
+    border-bottom:1px solid var(--gold);display:inline-block;padding:0 8px 4px;margin:14px 0;
+  }
+  .footer-note{text-align:center;font-size:12px;color:var(--taupe-soft);margin-top:24px;}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <h1 class="sr-only">Restart Journal interattivo: naviga tra mesi, settimane e giorni per tracciare le tue abitudini</h1>
+  <div class="cover">
+    <div class="ring"></div>
+    <div class="cover-dots"><span style="background:var(--pink);"></span><span style="background:var(--gold);"></span><span style="background:var(--blue);"></span></div>
+    <h1>Restart Journal</h1>
+    <p>Piccole abitudini · Grandi cambiamenti</p>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="wrap" id="view"></div>
+  <p class="footer-note">I tuoi progressi restano salvati su questo dispositivo.</p>
+</div>
+
+<script>
+const ICONS = {
+  dumbbell:'<svg viewBox="0 0 24 24"><rect x="2" y="9" width="3" height="6" rx="1"/><rect x="19" y="9" width="3" height="6" rx="1"/><rect x="6" y="7" width="2" height="10" rx="1"/><rect x="16" y="7" width="2" height="10" rx="1"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+  droplet:'<svg viewBox="0 0 24 24"><path d="M12 2C12 2 5 11 5 15a7 7 0 0 0 14 0c0-4-7-13-7-13z"/></svg>',
+  heart:'<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.35-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 5c-2.5 4.65-9.5 9-9.5 9z"/></svg>',
+  footprints:'<svg viewBox="0 0 24 24"><ellipse cx="7" cy="7" rx="3" ry="4"/><ellipse cx="17" cy="16" rx="3" ry="4"/></svg>',
+  moon:'<svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>',
+  phoneoff:'<svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="2" y1="2" x2="22" y2="22"/></svg>',
+  trophy:'<svg viewBox="0 0 24 24"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 4H4a4 4 0 0 0 4 4"/><path d="M16 4h4a4 4 0 0 1-4 4"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="8" y1="20" x2="16" y2="20"/></svg>',
+  leaf:'<svg viewBox="0 0 24 24"><path d="M4 20c8 0 16-6 16-16-10 0-16 8-16 16z"/><path d="M4 20c2-4 6-8 12-12"/></svg>',
+  seedling:'<svg viewBox="0 0 24 24"><path d="M12 22v-9"/><path d="M12 13c-5 0-8-3-8-8 5 0 8 3 8 8z"/><path d="M12 13c5 0 8-4 8-9-5 0-8 4-8 9z"/></svg>',
+  pencil:'<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  sparkle:'<svg viewBox="0 0 24 24"><path d="M12 2l1.8 5.6L19 9.4l-5.2 1.8L12 17l-1.8-5.8L5 9.4l5.2-1.8z"/></svg>',
+  flag:'<svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 5h13l-3 4 3 4H5"/></svg>'
+};
+const HABIT_ICON = {
+  "Allenamento":["dumbbell","ic-gold"],
+  "Idratazione":["droplet","ic-blue"],
+  "Tempo per me":["heart","ic-pink"],
+  "Movimento quotidiano":["footprints","ic-green"],
+  "Recupero":["moon","ic-pink"],
+  "Benessere digitale":["phoneoff","ic-blue"]
+};
+function iconBadge(name, cls, size){
+  return `<div class="icon-badge ${cls}">${ICONS[name]||''}</div>`;
+}
+
+const MONTHS = [
+  {
+    id:1,
+    title:"Mese 1 — Costruisco la mia routine",
+    intro:"Hai iniziato dalle basi: allenamento, idratazione e tempo per te.",
+    habits:["Allenamento","Idratazione","Tempo per me"],
+    weeks:5,
+    challengeOptions:["Provare una nuova ricetta","Leggere un libro","Fare una passeggiata in un posto nuovo","Provare una nuova attività","Imparare qualcosa di nuovo","Dedicarmi a un hobby che avevo abbandonato","Fare qualcosa da sola che non avevo mai fatto"]
+  },
+  {
+    id:2,
+    title:"Mese 2 — Divento più attiva",
+    intro:"Aggiungi il movimento quotidiano alle abitudini già costruite.",
+    habits:["Allenamento","Idratazione","Tempo per me","Movimento quotidiano"],
+    weeks:5,
+    challengeOptions:["Provare una nuova ricetta","Leggere un libro che avevo lasciato da parte","Fare una passeggiata in un posto nuovo","Provare una nuova attività","Dedicarmi nuovamente a un hobby","Fare qualcosa da sola che non avevo mai fatto","Imparare qualcosa di nuovo"]
+  },
+  {
+    id:3,
+    title:"Mese 3 — Aumento energia e qualità della vita",
+    intro:"Lavori anche su recupero e benessere digitale, per un percorso a 360°.",
+    habits:["Allenamento","Idratazione","Tempo per me","Movimento quotidiano","Recupero","Benessere digitale"],
+    weeks:5,
+    challengeOptions:null
+  }
+];
+
+const REFLECTION_QUESTIONS = [
+  ["trophy","La mia vittoria del mese","Qual è una cosa di cui sono orgogliosa questo mese? Anche una piccola conquista conta."],
+  ["leaf","Cosa mi ha fatto stare bene?","Quale abitudine, gesto o momento mi ha aiutata a sentirmi meglio?"],
+  ["heart","Un grazie a me","Completa la frase: \"Questo mese sono stata brava perché...\""],
+  ["seedling","Cosa voglio portare con me?","Qual è una piccola cosa che voglio continuare a fare nel prossimo mese?"]
+];
+
+const START_QUESTIONS = [
+  ["Perché ho deciso di iniziare Restart 360?"],
+  ["Come mi sento oggi, rispetto al mio corpo e al mio stile di vita?"],
+  ["Come vorrei sentirmi tra qualche mese?"],
+  ["Quali abitudini vorrei costruire?"],
+  ["La promessa che faccio a me stessa: durante questo percorso prometto a me stessa che..."]
+];
+
+const LOOKBACK_QUESTIONS = [
+  "Qual è il cambiamento di cui vado più fiera?",
+  "Quale abitudine è diventata parte della mia vita?",
+  "Cosa direi alla me che ha iniziato questo percorso?"
+];
+
+const PILLARS = [
+  ["Allenamento","Punto di partenza, senza diventare una fonte di stress: una routine che si adatta alla tua vita.","dumbbell","ic-gold"],
+  ["Idratazione","Un gesto semplice che sostiene il recupero e l'energia durante la giornata.","droplet","ic-blue"],
+  ["Movimento quotidiano","Non solo allenamento: camminare di più fa la differenza nel tempo.","footprints","ic-green"],
+  ["Recupero","Il fisico migliora a riposo: dormire bene è parte del percorso.","moon","ic-pink"],
+  ["Benessere","Prendersi cura di sé non significa solo allenarsi, ma anche della mente.","phoneoff","ic-blue"]
+];
+
+let DATA = {};
+try{ DATA = JSON.parse(localStorage.getItem('restartJournalData')||'{}'); }catch(e){ DATA = {}; }
+function save(){ localStorage.setItem('restartJournalData', JSON.stringify(DATA)); }
+function get(key, fallback){ return DATA[key] !== undefined ? DATA[key] : fallback; }
+function set(key, value){ DATA[key] = value; save(); }
+
+let state = { tab:'home', month:null, week:null, day:null };
+
+function renderTabs(){
+  const tabs = [{id:'home',label:'Home'}];
+  MONTHS.forEach(m=>tabs.push({id:'m'+m.id,label:'Mese '+m.id}));
+  tabs.push({id:'finale',label:'Traguardo'});
+  document.getElementById('tabs').innerHTML = tabs.map(t=>
+    `<button class="tab ${state.tab===t.id?'active':''}" onclick="goTab('${t.id}')">${t.label}</button>`
+  ).join('');
+}
+
+function goTab(id){
+  state.tab = id; state.month=null; state.week=null; state.day=null;
+  render();
+}
+
+function monthProgress(m){
+  let done=0, total=0;
+  for(let w=1; w<=m.weeks; w++){
+    for(let d=1; d<=7; d++){
+      m.habits.forEach((h,hi)=>{
+        total++;
+        if(get(`h-${m.id}-${w}-${d}-${hi}`,false)) done++;
+      });
+    }
+  }
+  return {done,total};
+}
+
+function weekProgress(m,w){
+  let done=0, total=0;
+  for(let d=1; d<=7; d++){
+    m.habits.forEach((h,hi)=>{
+      total++;
+      if(get(`h-${m.id}-${w}-${d}-${hi}`,false)) done++;
+    });
+  }
+  return {done,total};
+}
+
+function dayProgress(m,w,d){
+  let done=0;
+  m.habits.forEach((h,hi)=>{ if(get(`h-${m.id}-${w}-${d}-${hi}`,false)) done++; });
+  return {done, total:m.habits.length};
+}
+
+function render(){
+  renderTabs();
+  const view = document.getElementById('view');
+  if(state.tab==='home') return renderHome(view);
+  if(state.tab==='finale') return renderFinale(view);
+  const m = MONTHS.find(mm=>'m'+mm.id===state.tab);
+  if(!m) return;
+  if(state.day) return renderDay(view,m,state.week,state.day);
+  if(state.week) return renderWeek(view,m,state.week);
+  return renderMonth(view,m);
+}
+
+function renderHome(view){
+  view.innerHTML = `
+    <div class="card">
+      <h2>Benvenuta nel tuo Restart Journal</h2>
+      <p class="muted">Questo Journal non è un test. Non dovrai compilarlo perfettamente, e non dovrai sentirti in colpa se qualche giorno rimarrà una casella vuota. Il suo unico obiettivo è aiutarti a costruire, giorno dopo giorno, abitudini che possano accompagnarti anche oltre questo percorso.</p>
+      <p class="muted">Non stiamo cercando la perfezione. Stiamo costruendo la costanza.</p>
+    </div>
+    <div class="card">
+      <h3>I 5 pilastri Restart</h3>
+      ${PILLARS.map((p,i)=>`
+        <div class="pillar">
+          ${iconBadge(p[2],p[3])}
+          <div><strong>${p[0]}</strong><div class="muted" style="margin:2px 0 0;">${p[1]}</div></div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="card">
+      <div class="card-title-row">${iconBadge('flag','ic-blue')}<h3>Il tuo punto di partenza</h3></div>
+      <p class="muted">Prima di partire, prenditi qualche minuto per rispondere. Non esistono risposte giuste o sbagliate.</p>
+      ${START_QUESTIONS.map((q,i)=>`
+        <label style="font-size:13px;font-weight:600;color:var(--taupe);display:block;margin-bottom:6px;">${q[0]}</label>
+        <textarea rows="2" oninput="set('start-${i}', this.value)" placeholder="Scrivi qui...">${get('start-'+i,'')}</textarea>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderMonth(view,m){
+  const prog = monthProgress(m);
+  view.innerHTML = `
+    <div class="card">
+      <h2>${m.title}</h2>
+      <p class="muted">${m.intro}</p>
+      <span class="progress-pill">${prog.done}/${prog.total} completati</span>
+    </div>
+    <div class="card">
+      <h3>Le tue settimane</h3>
+      <div class="grid-list">
+        ${Array.from({length:m.weeks},(_,i)=>i+1).map(w=>{
+          const wp = weekProgress(m,w);
+          return `<div class="row-card" onclick="goWeek(${m.id},${w})">
+            <div><div class="row-title">Settimana ${w}</div><div class="row-sub">${m.habits.join(' · ')}</div></div>
+            <div style="display:flex;align-items:center;gap:10px;"><span class="progress-pill">${wp.done}/${wp.total}</span><span class="arrow">›</span></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title-row">${iconBadge('pencil','ic-blue')}<h3>Un minuto per me</h3></div>
+      <p class="muted">A fine mese, fermati a riflettere sui tuoi progressi.</p>
+      ${REFLECTION_QUESTIONS.map((q,i)=>{
+        const cls = i%2===0 ? 'ic-pink' : 'ic-green';
+        return `
+        <div class="card-title-row" style="margin-top:14px;">${iconBadge(q[0],cls)}<label style="font-size:13px;font-weight:600;color:var(--taupe);">${q[1]}</label></div>
+        <p class="muted" style="margin-top:-4px;">${q[2]}</p>
+        <textarea rows="2" oninput="set('refl-${m.id}-${i}', this.value)" placeholder="Scrivi qui...">${get('refl-'+m.id+'-'+i,'')}</textarea>`;
+      }).join('')}
+    </div>
+    ${m.challengeOptions ? `
+    <div class="card">
+      <h3>La mia Restart Challenge</h3>
+      <p class="muted">Questo mese scegli una piccola sfida che ti faccia uscire dalla routine.</p>
+      ${m.challengeOptions.map((c,i)=>`
+        <div class="choice" onclick="setChallenge(${m.id},${i})">
+          <div class="radio ${get('chal-'+m.id,-1)===i?'checked':''}"></div>
+          <div class="choice-label">${c}</div>
+        </div>
+      `).join('')}
+    </div>` : ''}
+  `;
+}
+
+function setChallenge(mid,i){
+  set('chal-'+mid, get('chal-'+mid,-1)===i ? -1 : i);
+  render();
+}
+
+function goWeek(mid,w){
+  state.tab='m'+mid; state.week=w; state.day=null; render();
+}
+function goDay(mid,w,d){
+  state.week=w; state.day=d; render();
+}
+
+function renderWeek(view,m,w){
+  const wp = weekProgress(m,w);
+  view.innerHTML = `
+    <button class="backbtn" onclick="state.week=null;render();">‹ Torna a ${m.title.split(' — ')[0]}</button>
+    <div class="card">
+      <h2>Settimana ${w}</h2>
+      <p class="muted">Missioni: ${m.habits.join(', ')}.</p>
+      <span class="progress-pill">${wp.done}/${wp.total} completati</span>
+    </div>
+    <div class="card">
+      <h3>Scegli un giorno</h3>
+      <div class="days-grid">
+        ${Array.from({length:7},(_,i)=>i+1).map(d=>{
+          const dp = dayProgress(m,w,d);
+          return `<div class="day-card" onclick="goDay(${m.id},${w},${d})">
+            <div class="num">${d}</div>
+            <div class="frac">${dp.done}/${dp.total}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title-row">${iconBadge('pencil','ic-pink')}<h3>Nota per me</h3></div>
+      <p class="muted">C'è qualcosa che voglio ricordarmi di questa settimana?</p>
+      <textarea rows="2" oninput="set('note-${m.id}-${w}', this.value)" placeholder="Scrivi qui...">${get('note-'+m.id+'-'+w,'')}</textarea>
+    </div>
+  `;
+}
+
+function renderDay(view,m,w,d){
+  view.innerHTML = `
+    <button class="backbtn" onclick="state.day=null;render();">‹ Torna alla settimana ${w}</button>
+    <div class="card">
+      <h2>Settimana ${w} · Giorno ${d}</h2>
+      <p class="muted">Spunta le missioni che hai completato oggi.</p>
+      ${m.habits.map((h,hi)=>{
+        const key = `h-${m.id}-${w}-${d}-${hi}`;
+        const checked = get(key,false);
+        const ic = HABIT_ICON[h] || ["sparkle","ic-gold"];
+        return `<div class="habit-item">
+          ${iconBadge(ic[0], ic[1])}
+          <div class="checkbox ${checked?'checked':''}" onclick="toggleHabit('${key}')">${checked?'✓':''}</div>
+          <div class="habit-label ${checked?'checked':''}">${h}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function toggleHabit(key){
+  set(key, !get(key,false));
+  render();
+}
+
+function renderFinale(view){
+  view.innerHTML = `
+    <div class="card">
+      <h2>Il mio percorso Restart</h2>
+      <p class="muted">Tre mesi. Tanti piccoli passi. Il risultato più importante non è solo il cambiamento del tuo corpo: è aver costruito una nuova consapevolezza. Puoi prenderti cura di te.</p>
+    </div>
+    <div class="card">
+      <h3>Guardati indietro</h3>
+      ${LOOKBACK_QUESTIONS.map((q,i)=>`
+        <label style="font-size:13px;font-weight:600;color:var(--taupe);display:block;margin-bottom:6px;">${q}</label>
+        <textarea rows="2" oninput="set('look-${i}', this.value)" placeholder="Scrivi qui...">${get('look-'+i,'')}</textarea>
+      `).join('')}
+    </div>
+    <div class="card">
+      <div class="card-title-row">${iconBadge('sparkle','ic-pink')}<h3>Attestato Restart</h3></div>
+      <div class="certificate">
+        <p class="muted" style="margin-bottom:0;">Questo attestato è dedicato a</p>
+        <input type="text" class="name" style="text-align:center;border:none;background:transparent;" oninput="set('cert-name', this.value)" value="${get('cert-name','')}" placeholder="Il tuo nome">
+        <p class="muted">per aver completato il suo primo percorso Restart e aver dimostrato impegno nel costruire nuove abitudini, prendersi cura di sé e dedicare tempo al proprio benessere.</p>
+        <p class="muted">Il tuo Restart continua.</p>
+      </div>
+    </div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
