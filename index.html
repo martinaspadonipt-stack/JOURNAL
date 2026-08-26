@@ -6,6 +6,7 @@
 <title>Restart Journal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --cream:#F7EFE2;
@@ -230,7 +231,8 @@
   </div>
   <div class="tabs" id="tabs"></div>
   <div class="wrap" id="view"></div>
-  <p class="footer-note">I tuoi progressi restano salvati su questo dispositivo.</p>
+  <p class="footer-note">I tuoi progressi restano salvati su questo dispositivo e online.</p>
+  <p class="footer-note" id="client-code-tag"></p>
 </div>
 
 <script>
@@ -316,11 +318,51 @@ const PILLARS = [
   ["Benessere","Prendersi cura di sé non significa solo allenarsi, ma anche della mente.","phoneoff","ic-blue"]
 ];
 
+// ⚠️ Incolla qui i tuoi dati Supabase (li trovi in Project Settings → API)
+const SUPABASE_URL = "iddzdhcwmvekrvpovtjc";
+const SUPABASE_ANON_KEY = "sb_publishable_F0aOwYX2sRyxSOQs6dnIfQ_W4eqBNRb";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Codice cliente: preso dal link, es. ?u=maria23 — se manca, usa "demo"
+const CLIENT_CODE = new URLSearchParams(window.location.search).get('u') || 'demo';
+
 let DATA = {};
-try{ DATA = JSON.parse(localStorage.getItem('restartJournalData')||'{}'); }catch(e){ DATA = {}; }
-function save(){ localStorage.setItem('restartJournalData', JSON.stringify(DATA)); }
+let saveTimer = null;
+
+function save(){
+  localStorage.setItem('restartJournalData-' + CLIENT_CODE, JSON.stringify(DATA));
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(syncToCloud, 700);
+}
 function get(key, fallback){ return DATA[key] !== undefined ? DATA[key] : fallback; }
 function set(key, value){ DATA[key] = value; save(); }
+
+async function syncToCloud(){
+  try{
+    await supabaseClient.from('journal_progress').upsert({
+      id: CLIENT_CODE, data: DATA, updated_at: new Date().toISOString()
+    });
+  }catch(e){ console.warn('Sync cloud non riuscito, i dati restano salvati in locale.', e); }
+}
+
+async function loadFromCloud(){
+  try{
+    const { data } = await supabaseClient
+      .from('journal_progress')
+      .select('data')
+      .eq('id', CLIENT_CODE)
+      .single();
+    if(data && data.data) DATA = data.data;
+  }catch(e){ /* nessun dato cloud ancora per questo codice: va bene così */ }
+}
+
+async function initApp(){
+  const tag = document.getElementById('client-code-tag');
+  if(tag) tag.textContent = 'Codice: ' + CLIENT_CODE;
+  try{ DATA = JSON.parse(localStorage.getItem('restartJournalData-' + CLIENT_CODE) || '{}'); }catch(e){ DATA = {}; }
+  await loadFromCloud();
+  render();
+}
 
 let state = { tab:'home', month:null, week:null, day:null };
 
@@ -543,7 +585,7 @@ function renderFinale(view){
   `;
 }
 
-render();
+initApp();
 </script>
 </body>
 </html>
